@@ -1,50 +1,44 @@
 class FirstTask {
-    public static class ShowTimeThread extends Thread{
-
-        @Override
-        public  void run() {
-            int counter = 0;
-            while (true){
-                counter++;
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if(counter%5 != 0){
-                    System.out.println("Прошло " + counter  + " секунд" );
-
-                }
-            }
-        }
-    }
-
-    public static class ShowFiveSeconds extends Thread{
-        int counter = 0;
-        @Override
-        public void run() {
-            while (true){
-                counter++;
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                if(counter%5==0){
-                    System.out.println("Прошло 5 секунд!!!");
-            }
-            }
-        }
-    }
-
     public static void main(String[] args) throws InterruptedException {
-        new ShowTimeThread().start();
-        new ShowFiveSeconds().start();
+        Thread eachSecond = new Thread(() -> {
+            int counter = 1;
+            Thread fiveSecond = new Thread(() ->{
+                while (true) {
+                    synchronized (Thread.currentThread()) {
+                        try {
+                            Thread.currentThread().wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println("Прошло 5 секунд!!!");
+                }
+            });
+            fiveSecond.start();
 
-        }
+            while (true){
+                if(counter%5==0){
+                    synchronized (fiveSecond){
+                        fiveSecond.notify();
+
+                    }
+                }
+
+                    System.out.println("Прошло " + counter + " секунд.");
+                    counter++;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+            }
+
+        });
+
+        eachSecond.start();
 
 
+
+
+    }
 }
-
-

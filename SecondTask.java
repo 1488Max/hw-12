@@ -1,80 +1,105 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SecondTask {
-     static boolean isDigit(String string) {
-        char[] chars = string.toCharArray();
 
-        for (char character : chars) {
-            if (Character.isDigit(character)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    public static void main(String[] args) throws InterruptedException {
-        List<String> strings = new ArrayList(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+    public static void main(String[] args) {
+        ArrayList<String> strings = new ArrayList(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
                 "12", "13", "14", "15"));
-        class A extends Thread {
-            public synchronized void run() {
-                for (int i = 0; i < strings.size(); i++) {
-                    if(isDigit(strings.get(i))) {
-                        if (Integer.parseInt(strings.get(i)) % 3 == 0 && Integer.parseInt(strings.get(i)) % 5 != 0) {
-                            strings.set(i, " fizz");
+        AtomicInteger counter = new AtomicInteger();
+        CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList<>();
+        Thread A = new Thread(() -> {
+            while (counter.get() < strings.toArray().length) {
+                if (Integer.parseInt(strings.get(counter.get())) % 3 == 0
+                        && Integer.parseInt(strings.get(counter.get())) % 5 != 0) {
+                    newList.add("fizz");
+                    counter.getAndIncrement();
+                    System.out.println(newList.toString());
+                    System.out.println("A");
+
+                }
+                else {
+                    synchronized (Thread.currentThread()) {
+                        try {
+                            Thread.currentThread().wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
-
-
             }
-        }
-        class B extends Thread {
-            public synchronized void run()  {
-                for (int i = 0; i < strings.size(); i++) {
-                    if(isDigit(strings.get(i))) {
-                        if (Integer.parseInt(strings.get(i)) % 3 != 0 && Integer.parseInt(strings.get(i)) % 5 == 0) {
-                            strings.set(i, " buzz");
+        });
+        Thread B = new Thread(() -> {
+            while (counter.get() < strings.toArray().length) {
+                if (Integer.parseInt(strings.get(counter.get())) % 3 != 0 && Integer.parseInt(strings.get(counter.get())) % 5 == 0) {
+                    newList.add("buzz");
+                    counter.getAndIncrement();
+                    System.out.println(newList.toString());
+                    System.out.println("B");
+                    synchronized (A){A.notify();}
+
+
+                }
+                else {
+                    synchronized (Thread.currentThread()) {
+                        try {
+                            Thread.currentThread().wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
-
-
             }
-        }
-        class C extends Thread {
-            public synchronized void run() {
-                for (int i = 0; i < strings.size(); i++) {
-                    if(isDigit(strings.get(i))) {
-                        if (Integer.parseInt(strings.get(i)) % 3 == 0 && Integer.parseInt(strings.get(i)) % 5 == 0) {
-                            strings.set(i, " fizzbuzz");
+        });
+        Thread C = new Thread(() -> {
+            while (counter.get() < strings.toArray().length) {
+                if (Integer.parseInt(strings.get(counter.get())) % 3 == 0 &&
+                        Integer.parseInt(strings.get(counter.get())) % 5 == 0) {
+                    newList.add("fizzbuzz");
+                    counter.getAndIncrement();
+                    System.out.println(newList.toString());
+                    System.out.println("C");
+
+
+                }
+                else {
+                    synchronized (Thread.currentThread()) {
+                        try {
+                            Thread.currentThread().wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
-
-
             }
-        }
-        class D extends Thread {
-            public synchronized void run() {
-                for (int i = 0; i < strings.size(); i++) {
-                    if(isDigit(strings.get(i))) {
-                        if (Integer.parseInt(strings.get(i)) % 3 != 0 && Integer.parseInt(strings.get(i)) % 5 != 0) {
+        });
+        Thread D = new Thread(() -> {
+            while (counter.get() < strings.toArray().length) {
+                if (Integer.parseInt(strings.get(counter.get())) % 3 != 0 &&
+                        Integer.parseInt(strings.get(counter.get())) % 5 != 0) {
+                    newList.add(strings.get(counter.get()));
+                    counter.getAndIncrement();
+                    System.out.println(newList.toString());
+                    System.out.println("D");
 
-                        }
-                    }
+
+                } else {
+                    synchronized (A){
+                    A.notify();}
+                    synchronized (B){B.notify();}
+                    synchronized (C){C.notify();}
                 }
-
-
             }
-        }
-                new A().start();
-                new B().start();
-                new C().start();
-                new D().start();
-        System.out.println(strings.toString());
+        });
+
+
+        A.start();
+        B.start();
+        C.start();
+        D.start();
+
 
 
     }

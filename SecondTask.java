@@ -6,14 +6,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SecondTask {
 
     public static void main(String[] args) {
-        ArrayList<String> strings = new ArrayList(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
-                "12", "13", "14", "15"));
+        int amountOfNumbers = 30;
+
         AtomicInteger counter = new AtomicInteger();
+        counter.getAndIncrement();
+
         CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList<>();
         Thread A = new Thread(() -> {
-            while (counter.get() < strings.toArray().length) {
-                if (Integer.parseInt(strings.get(counter.get())) % 3 == 0
-                        && Integer.parseInt(strings.get(counter.get())) % 5 != 0) {
+            while (counter.get() <= amountOfNumbers) {
+                if (counter.get() % 3 == 0
+                        && counter.get() % 5 != 0) {
                     newList.add("fizz");
                     counter.getAndIncrement();
                     System.out.println(newList.toString());
@@ -32,8 +34,8 @@ public class SecondTask {
             }
         });
         Thread B = new Thread(() -> {
-            while (counter.get() < strings.toArray().length) {
-                if (Integer.parseInt(strings.get(counter.get())) % 3 != 0 && Integer.parseInt(strings.get(counter.get())) % 5 == 0) {
+            while (counter.get() <= amountOfNumbers) {
+                if (counter.get() % 3 != 0 && counter.get() % 5 == 0) {
                     newList.add("buzz");
                     counter.getAndIncrement();
                     System.out.println(newList.toString());
@@ -54,9 +56,9 @@ public class SecondTask {
             }
         });
         Thread C = new Thread(() -> {
-            while (counter.get() < strings.toArray().length) {
-                if (Integer.parseInt(strings.get(counter.get())) % 3 == 0 &&
-                        Integer.parseInt(strings.get(counter.get())) % 5 == 0) {
+            while (counter.get() <= amountOfNumbers) {
+                if (counter.get() % 3 == 0 &&
+                        counter.get() % 5 == 0) {
                     newList.add("fizzbuzz");
                     counter.getAndIncrement();
                     System.out.println(newList.toString());
@@ -76,10 +78,10 @@ public class SecondTask {
             }
         });
         Thread D = new Thread(() -> {
-            while (counter.get() < strings.toArray().length) {
-                if (Integer.parseInt(strings.get(counter.get())) % 3 != 0 &&
-                        Integer.parseInt(strings.get(counter.get())) % 5 != 0) {
-                    newList.add(strings.get(counter.get()));
+            while (counter.get() <= amountOfNumbers) {
+                if (counter.get() % 3 != 0 &&
+                        counter.get() % 5 != 0) {
+                    newList.add(counter.toString());
                     counter.getAndIncrement();
                     System.out.println(newList.toString());
                     System.out.println("D");

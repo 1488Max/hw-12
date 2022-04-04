@@ -15,13 +15,12 @@ public class SecondTask {
             while (counter.get() <= amountOfNumbers) {
                 if (counter.get() % 3 == 0
                         && counter.get() % 5 != 0) {
-                    synchronized (newList) {
                         newList.add("fizz");
                         System.out.println(newList.toString());
-                    }
-                    synchronized (counter) {
+
+
                         counter.getAndIncrement();
-                    }
+
                     System.out.println("A");
                 }
 
@@ -40,13 +39,13 @@ public class SecondTask {
         Thread B = new Thread(() -> {
             while (counter.get() <= amountOfNumbers) {
                 if (counter.get() % 3 != 0 && counter.get() % 5 == 0) {
-                    synchronized (newList) {
+
                         newList.add("buzz");
                         System.out.println(newList.toString());
-                    }
-                    synchronized (counter) {
+
+
                         counter.getAndIncrement();
-                    }
+
                     System.out.println("B");
                     synchronized (A) {
                         A.notify();
@@ -68,13 +67,13 @@ public class SecondTask {
             while (counter.get() <= amountOfNumbers) {
                 if (counter.get() % 3 == 0 &&
                         counter.get() % 5 == 0) {
-                    synchronized (newList) {
+
                         newList.add("fizzbuzz");
                         System.out.println(newList.toString());
-                    }
-                    synchronized (counter) {
+
+
                         counter.getAndIncrement();
-                    }
+
                     System.out.println("C");
                     synchronized (B) {
                         B.notify();
@@ -96,13 +95,13 @@ public class SecondTask {
             while (counter.get() <= amountOfNumbers) {
                 if (counter.get() % 3 != 0 &&
                         counter.get() % 5 != 0) {
-                    synchronized (newList) {
+
                         newList.add(counter.toString());
                         System.out.println(newList.toString());
-                    }
-                    synchronized (counter) {
+
+
                         counter.getAndIncrement();
-                    }
+
 
                     System.out.println("D");
 
